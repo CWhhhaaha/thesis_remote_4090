@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data and outputs
+data/
+outputs/
+
+# Checkpoints and large artifacts
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.h5
+*.safetensors
+*.tar.gz
+*.zip
+
+# OS
+.DS_Store
+

@@ -1,0 +1,41 @@
+experiment:
+  name: B2_layerwise_signedcos
+  init: layerwise_prior
+  seed: 43
+  run_dir: outputs/runs/B2_layerwise_signedcos_seed43_cuda4090
+  base_std: 0.02
+  lambdas: [0.5, 0.75, 0.9, 1.0, 1.0, 1.2]
+
+data:
+  root: data/cifar10
+  num_workers: 8
+
+model:
+  img_size: 32
+  patch_size: 4
+  num_classes: 10
+  embed_dim: 512
+  depth: 6
+  num_heads: 8
+  mlp_ratio: 4.0
+  qkv_bias: true
+  drop_rate: 0.0
+  attn_drop_rate: 0.0
+
+train:
+  epochs: 500
+  batch_size: 256
+  lr: 0.003
+  beta1: 0.9
+  beta2: 0.999
+  weight_decay: 0.05
+  warmup_epochs: 30
+  warmup_start_factor: 0.033
+  mixup_alpha: 0.2
+  cutmix_alpha: 1.0
+  label_smoothing: 0.01
+  ema_decay: 0.99998
+  use_ema: true
+  eval_every: 1
+  amp: true
+  channels_last: true
