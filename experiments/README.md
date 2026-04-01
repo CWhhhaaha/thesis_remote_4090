@@ -32,6 +32,30 @@ python scripts/train_cifar_vit.py --config configs/current/b0_standard.yaml
 python scripts/train_cifar_vit.py --config configs/current/b2_layerwise_signedcos.yaml
 ```
 
+## One-Command Runs
+
+Foreground:
+
+```bash
+cd remote_4090/experiments
+bash run_b0.sh
+bash run_b2.sh
+```
+
+Background with logs:
+
+```bash
+cd remote_4090/experiments
+bash run_b0_bg.sh
+bash run_b2_bg.sh
+```
+
+Tail logs:
+
+```bash
+tail -f outputs/logs/<log_file>.log
+```
+
 ## Notes
 
 - Data, outputs, checkpoints, and archives are ignored by git.
