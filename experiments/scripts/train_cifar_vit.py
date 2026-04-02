@@ -110,7 +110,7 @@ def evaluate(model: nn.Module, loader, criterion, device: torch.device):
     total = 0
     correct = 0.0
     with torch.no_grad():
-        for images, labels in tqdm(loader, desc="eval", leave=False):
+        for images, labels in loader:
             images = images.to(device, non_blocking=True)
             labels = labels.to(device, non_blocking=True)
             logits = model(images)
@@ -158,11 +158,16 @@ def main():
     init_stats = maybe_apply_init_scheme(model, cfg)
     save_json(run_dir / "init_stats.json", {"layers": init_stats})
 
-    mixup_fn = Mixup(
-        mixup_alpha=cfg["train"]["mixup_alpha"],
-        cutmix_alpha=cfg["train"]["cutmix_alpha"],
-        label_smoothing=cfg["train"]["label_smoothing"],
-        num_classes=cfg["model"]["num_classes"],
+    use_mixup = cfg["train"]["mixup_alpha"] > 0 or cfg["train"]["cutmix_alpha"] > 0
+    mixup_fn = (
+        Mixup(
+            mixup_alpha=cfg["train"]["mixup_alpha"],
+            cutmix_alpha=cfg["train"]["cutmix_alpha"],
+            label_smoothing=cfg["train"]["label_smoothing"],
+            num_classes=cfg["model"]["num_classes"],
+        )
+        if use_mixup
+        else None
     )
     criterion_train = build_criterion(cfg)
     criterion_eval = nn.CrossEntropyLoss()
@@ -213,19 +218,39 @@ def main():
             train_bar = tqdm(
                 train_loader,
                 desc=f"epoch {epoch:03d}/{cfg['train']['epochs']:03d}",
-                leave=True,
+                leave=False,
+                dynamic_ncols=True,
+                mininterval=0.5,
+                bar_format="{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]",
             )
             for images, labels in train_bar:
                 images = images.to(device, non_blocking=non_blocking)
                 labels = labels.to(device, non_blocking=non_blocking)
                 if use_channels_last:
                     images = images.contiguous(memory_format=torch.channels_last)
-                mixed_images, mixed_labels = mixup_fn(images, labels)
+                if mixup_fn is not None:
+                    mixed_images, mixed_labels = mixup_fn(images, labels)
+                else:
+                    mixed_images, mixed_labels = images, labels
                 optimizer.zero_grad(set_to_none=True)
 
                 with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=amp_enabled):
                     logits = model(mixed_images)
                     loss = criterion_train(logits, mixed_labels)
+
+                if not torch.isfinite(loss):
+                    failure_state = {
+                        "epoch": epoch,
+                        "step_in_epoch": total // batch_size + 1 if batch_size > 0 else None,
+                        "loss": float(loss.detach().cpu().item()) if loss.numel() == 1 else None,
+                        "lr": optimizer.param_groups[0]["lr"],
+                    }
+                    save_json(run_dir / "failure_state.json", failure_state)
+                    raise RuntimeError(
+                        f"Non-finite loss detected at epoch {epoch}, "
+                        f"step {failure_state['step_in_epoch']}. "
+                        "Training stopped to avoid corrupting the run."
+                    )
 
                 if scaler.is_enabled():
                     scaler.scale(loss).backward()
@@ -241,8 +266,11 @@ def main():
                 running_loss += loss.item() * batch_size
                 total += batch_size
                 train_bar.set_postfix(
-                    loss=f"{loss.item():.4f}",
-                    lr=f"{optimizer.param_groups[0]['lr']:.5f}",
+                    {
+                        "loss": f"{loss.item():.4f}",
+                        "lr": f"{optimizer.param_groups[0]['lr']:.5f}",
+                    },
+                    refresh=False,
                 )
 
             scheduler.step()
@@ -277,7 +305,8 @@ def main():
             if device.type == "mps":
                 torch.mps.empty_cache()
 
-            print(
+            train_bar.close()
+            tqdm.write(
                 f"[epoch {epoch:03d}] "
                 f"train_loss={row['train_loss']:.4f} "
                 f"val_loss={row['val_loss']:.4f} "
@@ -286,7 +315,6 @@ def main():
                 f"lr={row['lr']:.5f} "
                 f"time={epoch_time:.1f}s"
             )
-
     final_metrics = collect_layerwise_attention_metrics(model, include_uvcos=True)
     save_json(
         run_dir / "final_structure.json",
