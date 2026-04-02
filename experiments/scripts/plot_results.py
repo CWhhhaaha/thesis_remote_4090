@@ -1,13 +1,15 @@
-import csv
 import argparse
+import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-ROOT = Path("/Users/admin/Downloads/my_lab/thesis/experiments")
+EXPERIMENTS_ROOT = Path(__file__).resolve().parents[1]
+if str(EXPERIMENTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(EXPERIMENTS_ROOT))
 
 COLORS = {
     "B0": "#4D4D4D",
@@ -185,12 +187,12 @@ def main():
     b0_dir = Path(args.b0_run)
     b2_dir = Path(args.b2_run)
     if not b0_dir.is_absolute():
-        b0_dir = ROOT / b0_dir
+        b0_dir = EXPERIMENTS_ROOT / b0_dir
     if not b2_dir.is_absolute():
-        b2_dir = ROOT / b2_dir
+        b2_dir = EXPERIMENTS_ROOT / b2_dir
     figs_dir = Path(args.fig_dir)
     if not figs_dir.is_absolute():
-        figs_dir = ROOT / figs_dir
+        figs_dir = EXPERIMENTS_ROOT / figs_dir
     figs_dir.mkdir(parents=True, exist_ok=True)
 
     plot_main_figure(b0_dir, b2_dir, figs_dir)
