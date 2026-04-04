@@ -20,7 +20,23 @@ COLORS = {
 def load_metrics(run_dir: Path):
     path = run_dir / "metrics.csv"
     with path.open() as f:
-        rows = list(csv.DictReader(f))
+        raw_rows = list(csv.DictReader(f))
+    rows = []
+    expected_keys = None
+    for row in raw_rows:
+        if expected_keys is None:
+            expected_keys = list(row.keys())
+        try:
+            int(row["epoch"])
+            for key, value in row.items():
+                if key == "epoch":
+                    continue
+                if value is None or value == "":
+                    raise ValueError(f"missing value for {key}")
+                float(value)
+        except (TypeError, ValueError):
+            continue
+        rows.append(row)
     out = {}
     for key in rows[0].keys():
         if key == "epoch":
