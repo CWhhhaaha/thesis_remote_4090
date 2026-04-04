@@ -48,7 +48,12 @@ class StructuredPriorAttention(nn.Module):
             return ((sym_energy + (self.alpha ** 2) * asym_energy) / denom).sqrt()
         raise ValueError(f"Unknown gamma_mode: {self.gamma_mode}")
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        x: torch.Tensor,
+        attn_mask: torch.Tensor | None = None,
+        is_causal: bool = False,
+    ) -> torch.Tensor:
         batch_size, num_tokens, channels = x.shape
         qkv = self.qkv(x).reshape(batch_size, num_tokens, 3, self.num_heads, self.head_dim)
         qkv = qkv.permute(2, 0, 3, 1, 4)
@@ -68,6 +73,9 @@ class StructuredPriorAttention(nn.Module):
 
         if self.score_tanh_clip > 0:
             scores = self.score_tanh_clip * torch.tanh(scores / self.score_tanh_clip)
+
+        if attn_mask is not None:
+            scores = scores + attn_mask
 
         attn = scores.softmax(dim=-1)
         attn = self.attn_drop(attn)
