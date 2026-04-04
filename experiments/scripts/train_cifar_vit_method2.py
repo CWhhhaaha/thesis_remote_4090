@@ -159,6 +159,10 @@ def main():
 
     init_stats = maybe_apply_init_scheme(model, cfg)
     save_json(run_dir / "init_stats.json", {"layers": init_stats})
+    save_json(
+        run_dir / "init_structure.json",
+        {"initial_layer_metrics": collect_layerwise_attention_metrics(model, include_uvcos=True)},
+    )
 
     forward_prior_stats = apply_forward_structural_prior(model, cfg["method2"])
     save_json(run_dir / "forward_prior_stats.json", {"layers": forward_prior_stats})

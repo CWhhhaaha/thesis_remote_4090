@@ -34,6 +34,13 @@ def load_json(run_dir: Path, filename: str):
     return json.loads((run_dir / filename).read_text())
 
 
+def try_load_json(run_dir: Path, filename: str):
+    path = run_dir / filename
+    if not path.exists():
+        return None
+    return json.loads(path.read_text())
+
+
 def style():
     plt.rcParams.update(
         {
@@ -117,19 +124,31 @@ def plot_main_figure(b0_dir: Path, b2_dir: Path, figs_dir: Path):
 
 def plot_structure_figure(b2_dir: Path, figs_dir: Path):
     style()
-    b2_init = load_json(b2_dir, "init_stats.json")["layers"]
+    b2_init = try_load_json(b2_dir, "init_stats.json")
+    b2_init = b2_init["layers"] if b2_init is not None else []
+    b2_init_struct = try_load_json(b2_dir, "init_structure.json")
     b2_final = load_json(b2_dir, "final_structure.json")["final_layer_metrics"]
     layers = np.arange(1, 7)
 
-    init_sym = [x["symmetry_ratio"] for x in b2_init]
     final_sym = [b2_final[f"sym_l{i}"] for i in layers]
-    init_uv = [x["weighted_uv_alignment"] for x in b2_init]
     final_uv = [b2_final[f"uvcos_l{i}"] for i in layers]
+
+    if b2_init_struct is not None:
+        init_layer_metrics = b2_init_struct["initial_layer_metrics"]
+        init_sym = [init_layer_metrics[f"sym_l{i}"] for i in layers]
+        init_uv = [init_layer_metrics[f"uvcos_l{i}"] for i in layers]
+    elif len(b2_init) == len(layers):
+        init_sym = [x["symmetry_ratio"] for x in b2_init]
+        init_uv = [x["weighted_uv_alignment"] for x in b2_init]
+    else:
+        init_sym = None
+        init_uv = None
 
     fig, axes = plt.subplots(1, 2, figsize=(9, 3.6))
 
     ax = axes[0]
-    ax.plot(layers, init_sym, color="#4C78A8", lw=2.2, marker="o", ms=5, label="Initialization")
+    if init_sym is not None:
+        ax.plot(layers, init_sym, color="#4C78A8", lw=2.2, marker="o", ms=5, label="Initialization")
     ax.plot(layers, final_sym, color=COLORS["B2"], lw=2.2, marker="o", ms=5, label="Final")
     ax.set_title("B2 Symmetry Profile")
     ax.set_xlabel("Layer")
@@ -137,10 +156,12 @@ def plot_structure_figure(b2_dir: Path, figs_dir: Path):
     ax.set_xticks(layers)
     ax.set_ylim(0.45, 1.02)
     ax.grid(True, axis="y")
-    ax.legend(frameon=False, loc="best")
+    if init_sym is not None:
+        ax.legend(frameon=False, loc="best")
 
     ax = axes[1]
-    ax.plot(layers, init_uv, color="#4C78A8", lw=2.2, marker="o", ms=5, label="Initialization")
+    if init_uv is not None:
+        ax.plot(layers, init_uv, color="#4C78A8", lw=2.2, marker="o", ms=5, label="Initialization")
     ax.plot(layers, final_uv, color=COLORS["B2"], lw=2.2, marker="o", ms=5, label="Final")
     ax.set_title("B2 U-V Alignment Profile")
     ax.set_xlabel("Layer")

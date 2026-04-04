@@ -157,6 +157,10 @@ def main():
         model = model.to(memory_format=torch.channels_last)
     init_stats = maybe_apply_init_scheme(model, cfg)
     save_json(run_dir / "init_stats.json", {"layers": init_stats})
+    save_json(
+        run_dir / "init_structure.json",
+        {"initial_layer_metrics": collect_layerwise_attention_metrics(model, include_uvcos=True)},
+    )
 
     use_mixup = cfg["train"]["mixup_alpha"] > 0 or cfg["train"]["cutmix_alpha"] > 0
     mixup_fn = (
