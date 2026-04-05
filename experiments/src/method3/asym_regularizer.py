@@ -27,16 +27,60 @@ def describe_lambda_schedule(model: nn.Module, cfg: Dict) -> List[Dict[str, floa
         raise ValueError("Expected a timm VisionTransformer with model.blocks")
 
     lambdas = build_lambda_schedule(len(blocks), cfg)
+    regularizer_type = str(cfg.get("regularizer_type", "absolute"))
+    epsilon = float(cfg.get("epsilon", 1e-12))
     stats: List[Dict[str, float]] = []
     for layer_idx, lambda_l in enumerate(lambdas, start=1):
-        stats.append({"layer": layer_idx, "lambda": float(lambda_l)})
+        stats.append(
+            {
+                "layer": layer_idx,
+                "lambda": float(lambda_l),
+                "regularizer_type": regularizer_type,
+                "epsilon": epsilon,
+            }
+        )
     return stats
 
 
-def _layer_total_asymmetry_energy(q_weight: torch.Tensor, k_weight: torch.Tensor) -> torch.Tensor:
-    w_qk = q_weight @ k_weight.transpose(-1, -2)
+def _layer_total_qk_matrix(q_weight: torch.Tensor, k_weight: torch.Tensor) -> torch.Tensor:
+    return q_weight @ k_weight.transpose(-1, -2)
+
+
+def _layer_total_asymmetry_energy(w_qk: torch.Tensor) -> torch.Tensor:
     asym = 0.5 * (w_qk - w_qk.transpose(-1, -2))
     return torch.sum(asym * asym)
+
+
+def _layer_total_qk_energy(w_qk: torch.Tensor) -> torch.Tensor:
+    return torch.sum(w_qk * w_qk)
+
+
+def _layer_regularizer_value(q_weight: torch.Tensor, k_weight: torch.Tensor, cfg: Dict) -> torch.Tensor:
+    regularizer_type = str(cfg.get("regularizer_type", "absolute"))
+    epsilon = float(cfg.get("epsilon", 1e-12))
+    w_qk = _layer_total_qk_matrix(q_weight, k_weight)
+    asym_energy = _layer_total_asymmetry_energy(w_qk)
+
+    if regularizer_type == "absolute":
+        return asym_energy
+    if regularizer_type == "ratio":
+        total_energy = _layer_total_qk_energy(w_qk).clamp_min(epsilon)
+        return asym_energy / total_energy
+
+    raise ValueError(f"Unknown Method3 regularizer_type: {regularizer_type}")
+
+
+def _layer_diagnostics(q_weight: torch.Tensor, k_weight: torch.Tensor, cfg: Dict) -> Dict[str, float]:
+    epsilon = float(cfg.get("epsilon", 1e-12))
+    w_qk = _layer_total_qk_matrix(q_weight, k_weight)
+    asym_energy = _layer_total_asymmetry_energy(w_qk)
+    total_energy = _layer_total_qk_energy(w_qk).clamp_min(epsilon)
+    ratio = asym_energy / total_energy
+    return {
+        "asym_energy": float(asym_energy.detach().cpu().item()),
+        "total_energy": float(total_energy.detach().cpu().item()),
+        "ratio": float(ratio.detach().cpu().item()),
+    }
 
 
 def structural_asymmetry_regularization(
@@ -63,11 +107,15 @@ def structural_asymmetry_regularization(
         embed_dim = qkv_weight.shape[1]
         q_weight = qkv_weight[:embed_dim]
         k_weight = qkv_weight[embed_dim : 2 * embed_dim]
-        layer_reg = _layer_total_asymmetry_energy(q_weight, k_weight)
+        layer_reg = _layer_regularizer_value(q_weight, k_weight, cfg)
 
         total_reg = total_reg + float(lambda_l) * layer_reg
         if return_details:
+            diagnostics = _layer_diagnostics(q_weight, k_weight, cfg)
             details[f"reg_l{layer_idx}"] = float(layer_reg.detach().cpu().item())
+            details[f"asym_energy_l{layer_idx}"] = diagnostics["asym_energy"]
+            details[f"total_energy_l{layer_idx}"] = diagnostics["total_energy"]
+            details[f"ratio_l{layer_idx}"] = diagnostics["ratio"]
 
     if return_details:
         return total_reg, details
