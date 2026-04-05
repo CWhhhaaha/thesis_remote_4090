@@ -33,15 +33,10 @@ def describe_lambda_schedule(model: nn.Module, cfg: Dict) -> List[Dict[str, floa
     return stats
 
 
-def _head_asymmetry_energy(q_head_rows: torch.Tensor, k_head_rows: torch.Tensor) -> torch.Tensor:
-    qq_t = q_head_rows @ q_head_rows.transpose(-1, -2)
-    kk_t = k_head_rows @ k_head_rows.transpose(-1, -2)
-    qk_t = q_head_rows @ k_head_rows.transpose(-1, -2)
-
-    term1 = torch.sum(qq_t * kk_t)
-    term2 = torch.trace(qk_t @ qk_t)
-    energy = 0.5 * (term1 - term2)
-    return energy.clamp_min(0.0)
+def _layer_total_asymmetry_energy(q_weight: torch.Tensor, k_weight: torch.Tensor) -> torch.Tensor:
+    w_qk = q_weight @ k_weight.transpose(-1, -2)
+    asym = 0.5 * (w_qk - w_qk.transpose(-1, -2))
+    return torch.sum(asym * asym)
 
 
 def structural_asymmetry_regularization(
@@ -66,19 +61,9 @@ def structural_asymmetry_regularization(
 
         qkv_weight = block.attn.qkv.weight
         embed_dim = qkv_weight.shape[1]
-        num_heads = block.attn.num_heads
-        head_dim = embed_dim // num_heads
-
         q_weight = qkv_weight[:embed_dim]
         k_weight = qkv_weight[embed_dim : 2 * embed_dim]
-
-        layer_reg = torch.zeros((), device=qkv_weight.device, dtype=qkv_weight.dtype)
-        for head_idx in range(num_heads):
-            start = head_idx * head_dim
-            end = start + head_dim
-            q_head_rows = q_weight[start:end]
-            k_head_rows = k_weight[start:end]
-            layer_reg = layer_reg + _head_asymmetry_energy(q_head_rows, k_head_rows)
+        layer_reg = _layer_total_asymmetry_energy(q_weight, k_weight)
 
         total_reg = total_reg + float(lambda_l) * layer_reg
         if return_details:
