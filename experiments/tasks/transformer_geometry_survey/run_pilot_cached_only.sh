@@ -16,8 +16,7 @@ pip install -r requirements.txt
 
 python analyze_qk_geometry.py \
   --split primary \
-  --download-retries 5 \
-  --retry-sleep-sec 5 \
+  --local-files-only \
   --cache-dir hf_cache \
   --skip-existing \
   --models \

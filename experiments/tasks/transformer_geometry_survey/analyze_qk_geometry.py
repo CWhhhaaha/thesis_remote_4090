@@ -2,15 +2,15 @@
 import argparse
 import csv
 import json
-import math
-import re
+import os
 import time
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import torch
 import torch.nn as nn
+from huggingface_hub import snapshot_download
 from transformers import AutoConfig, AutoModel
 
 
@@ -95,6 +95,24 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip models whose output directory already contains summary.json.",
     )
+    parser.add_argument(
+        "--cache-dir",
+        type=str,
+        default="hf_cache",
+        help="Local cache/snapshot directory used before loading models.",
+    )
+    parser.add_argument(
+        "--download-retries",
+        type=int,
+        default=3,
+        help="How many times to retry snapshot download before giving up.",
+    )
+    parser.add_argument(
+        "--retry-sleep-sec",
+        type=float,
+        default=3.0,
+        help="Base sleep time between retries.",
+    )
     return parser.parse_args()
 
 
@@ -132,6 +150,14 @@ def filter_inventory(entries: List[Dict], category: str, models: Optional[List[s
     if limit > 0:
         out = out[:limit]
     return out
+
+
+def model_cache_dir(cache_root: Path, model_id: str) -> Path:
+    return cache_root / slugify_model_id(model_id)
+
+
+def has_local_snapshot(cache_dir: Path) -> bool:
+    return (cache_dir / "config.json").exists()
 
 
 def is_supported_weight_module(module: nn.Module) -> bool:
@@ -282,16 +308,57 @@ def summarize_by_stack(layer_rows: List[Dict]) -> Dict[str, Dict[str, float]]:
     return summary
 
 
-def load_model(model_id: str, device: str, load_dtype: str, local_files_only: bool, trust_remote_code: bool):
+def maybe_download_snapshot(model_id: str, cache_dir: Path, args: argparse.Namespace) -> Path:
+    if has_local_snapshot(cache_dir):
+        return cache_dir
+    if args.local_files_only:
+        raise FileNotFoundError(f"No local snapshot for {model_id} in {cache_dir}")
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    download_kwargs = {
+        "repo_id": model_id,
+        "local_dir": str(cache_dir),
+        "local_dir_use_symlinks": False,
+        "resume_download": True,
+        "ignore_patterns": [
+            "*.h5",
+            "*.ot",
+            "*.onnx",
+            "*.tflite",
+            "*.msgpack",
+            "*.gguf",
+        ],
+    }
+
+    last_error = None
+    for attempt in range(1, args.download_retries + 1):
+        try:
+            snapshot_download(**download_kwargs)
+            if has_local_snapshot(cache_dir):
+                return cache_dir
+        except Exception as exc:
+            last_error = exc
+            if attempt < args.download_retries:
+                sleep_for = args.retry_sleep_sec * attempt
+                print(f"[retry] download {model_id} failed on attempt {attempt}/{args.download_retries}: {exc}")
+                print(f"[retry] sleeping {sleep_for:.1f}s before retry")
+                time.sleep(sleep_for)
+            else:
+                break
+    raise RuntimeError(f"Snapshot download failed for {model_id}: {last_error}")
+
+
+def load_model(model_source: str, device: str, load_dtype: str, local_files_only: bool, trust_remote_code: bool):
     dtype = resolve_dtype(load_dtype)
     kwargs = {
         "local_files_only": local_files_only,
         "trust_remote_code": trust_remote_code,
+        "use_safetensors": False,
     }
     if dtype != "auto":
         kwargs["torch_dtype"] = dtype
-    config = AutoConfig.from_pretrained(model_id, **kwargs)
-    model = AutoModel.from_pretrained(model_id, config=config, **kwargs)
+    config = AutoConfig.from_pretrained(model_source, **kwargs)
+    model = AutoModel.from_pretrained(model_source, config=config, **kwargs)
     model.eval()
     if device == "cuda":
         model = model.to("cuda")
@@ -311,11 +378,15 @@ def analyze_one_model(entry: Dict, args: argparse.Namespace, output_root: Path) 
         return cached
 
     start = time.time()
+    cache_root = Path(args.cache_dir)
+    if not cache_root.is_absolute():
+        cache_root = Path(__file__).resolve().parent / cache_root
+    local_model_dir = maybe_download_snapshot(model_id, model_cache_dir(cache_root, model_id), args)
     model, config = load_model(
-        model_id=model_id,
+        model_source=str(local_model_dir),
         device=args.device,
         load_dtype=args.load_dtype,
-        local_files_only=args.local_files_only,
+        local_files_only=True,
         trust_remote_code=args.trust_remote_code,
     )
 
@@ -340,6 +411,7 @@ def analyze_one_model(entry: Dict, args: argparse.Namespace, output_root: Path) 
         "category": entry["category"],
         "family": entry["family"],
         "url": entry["url"],
+        "local_model_dir": str(local_model_dir),
         "config_class": config.__class__.__name__,
         "architectures": getattr(config, "architectures", None),
         "num_attention_sites": len(layer_rows),
@@ -386,6 +458,8 @@ def write_inventory_summary(path: Path, rows: List[Dict]):
 
 def main():
     args = parse_args()
+    os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
+    os.environ.setdefault("TRANSFORMERS_NO_ADVISORY_WARNINGS", "1")
     script_dir = Path(__file__).resolve().parent
     inventory_path = Path(args.inventory)
     if not inventory_path.is_absolute():
