@@ -1,0 +1,55 @@
+{
+  "primary": [
+    {"category": "vision", "family": "ViT", "model_id": "google/vit-base-patch16-224", "url": "https://huggingface.co/google/vit-base-patch16-224", "priority": 1, "notes": "supervised image classification"},
+    {"category": "vision", "family": "DeiT", "model_id": "facebook/deit-base-patch16-224", "url": "https://huggingface.co/facebook/deit-base-patch16-224", "priority": 1, "notes": "distilled-free ViT training recipe"},
+    {"category": "vision", "family": "MAE", "model_id": "facebook/vit-mae-base", "url": "https://huggingface.co/facebook/vit-mae-base", "priority": 1, "notes": "masked autoencoding pretraining"},
+    {"category": "vision", "family": "DINOv2", "model_id": "facebook/dinov2-base", "url": "https://huggingface.co/facebook/dinov2-base", "priority": 1, "notes": "self-supervised vision representation"},
+    {"category": "vision", "family": "BEiT", "model_id": "microsoft/beit-base-patch16-224-pt22k-ft22k", "url": "https://huggingface.co/microsoft/beit-base-patch16-224-pt22k-ft22k", "priority": 2, "notes": "BERT-style image pretraining"},
+    {"category": "vision", "family": "Swin", "model_id": "microsoft/swin-base-patch4-window7-224", "url": "https://huggingface.co/microsoft/swin-base-patch4-window7-224", "priority": 2, "notes": "windowed hierarchical transformer"},
+
+    {"category": "text_encoder", "family": "BERT", "model_id": "google-bert/bert-base-uncased", "url": "https://huggingface.co/google-bert/bert-base-uncased", "priority": 1, "notes": "canonical encoder-only baseline"},
+    {"category": "text_encoder", "family": "RoBERTa", "model_id": "FacebookAI/roberta-base", "url": "https://huggingface.co/FacebookAI/roberta-base", "priority": 1, "notes": "strong masked language model baseline"},
+    {"category": "text_encoder", "family": "DeBERTa-v3", "model_id": "microsoft/deberta-v3-base", "url": "https://huggingface.co/microsoft/deberta-v3-base", "priority": 1, "notes": "disentangled attention family"},
+    {"category": "text_encoder", "family": "ELECTRA", "model_id": "google/electra-base-discriminator", "url": "https://huggingface.co/google/electra-base-discriminator", "priority": 2, "notes": "replaced-token detection"},
+    {"category": "text_encoder", "family": "MPNet", "model_id": "microsoft/mpnet-base", "url": "https://huggingface.co/microsoft/mpnet-base", "priority": 2, "notes": "permutation + MLM hybrid"},
+    {"category": "text_encoder", "family": "XLM-R", "model_id": "FacebookAI/xlm-roberta-base", "url": "https://huggingface.co/FacebookAI/xlm-roberta-base", "priority": 2, "notes": "multilingual encoder"},
+
+    {"category": "decoder_lm", "family": "GPT-2", "model_id": "openai-community/gpt2", "url": "https://huggingface.co/openai-community/gpt2", "priority": 1, "notes": "canonical autoregressive baseline"},
+    {"category": "decoder_lm", "family": "GPT-2", "model_id": "openai-community/gpt2-medium", "url": "https://huggingface.co/openai-community/gpt2-medium", "priority": 2, "notes": "larger GPT-2 variant"},
+    {"category": "decoder_lm", "family": "OPT", "model_id": "facebook/opt-350m", "url": "https://huggingface.co/facebook/opt-350m", "priority": 1, "notes": "open autoregressive LM"},
+    {"category": "decoder_lm", "family": "OPT", "model_id": "facebook/opt-1.3b", "url": "https://huggingface.co/facebook/opt-1.3b", "priority": 2, "notes": "larger OPT checkpoint"},
+    {"category": "decoder_lm", "family": "BLOOM", "model_id": "bigscience/bloom-560m", "url": "https://huggingface.co/bigscience/bloom-560m", "priority": 2, "notes": "multilingual decoder-only LM"},
+    {"category": "decoder_lm", "family": "Pythia", "model_id": "EleutherAI/pythia-410m", "url": "https://huggingface.co/EleutherAI/pythia-410m", "priority": 2, "notes": "analyzed training-friendly decoder family"},
+
+    {"category": "seq2seq", "family": "T5", "model_id": "t5-base", "url": "https://huggingface.co/t5-base", "priority": 1, "notes": "canonical text-to-text transformer"},
+    {"category": "seq2seq", "family": "FLAN-T5", "model_id": "google/flan-t5-base", "url": "https://huggingface.co/google/flan-t5-base", "priority": 1, "notes": "instruction-tuned T5 family"},
+    {"category": "seq2seq", "family": "BART", "model_id": "facebook/bart-base", "url": "https://huggingface.co/facebook/bart-base", "priority": 1, "notes": "denoising seq2seq baseline"},
+    {"category": "seq2seq", "family": "mT5", "model_id": "google/mt5-base", "url": "https://huggingface.co/google/mt5-base", "priority": 2, "notes": "multilingual T5"},
+    {"category": "seq2seq", "family": "M2M100", "model_id": "facebook/m2m100_418M", "url": "https://huggingface.co/facebook/m2m100_418M", "priority": 2, "notes": "many-to-many translation"},
+    {"category": "seq2seq", "family": "NLLB", "model_id": "facebook/nllb-200-distilled-600M", "url": "https://huggingface.co/facebook/nllb-200-distilled-600M", "priority": 2, "notes": "massively multilingual translation"},
+
+    {"category": "audio", "family": "Wav2Vec2", "model_id": "facebook/wav2vec2-base", "url": "https://huggingface.co/facebook/wav2vec2-base", "priority": 1, "notes": "canonical speech encoder"},
+    {"category": "audio", "family": "HuBERT", "model_id": "facebook/hubert-base-ls960", "url": "https://huggingface.co/facebook/hubert-base-ls960", "priority": 1, "notes": "masked prediction speech encoder"},
+    {"category": "audio", "family": "WavLM", "model_id": "microsoft/wavlm-base", "url": "https://huggingface.co/microsoft/wavlm-base", "priority": 1, "notes": "speech foundation model"},
+    {"category": "audio", "family": "Whisper", "model_id": "openai/whisper-small", "url": "https://huggingface.co/openai/whisper-small", "priority": 1, "notes": "speech seq2seq transcription model"},
+    {"category": "audio", "family": "AST", "model_id": "MIT/ast-finetuned-audioset-10-10-0.4593", "url": "https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593", "priority": 2, "notes": "audio spectrogram transformer"},
+    {"category": "audio", "family": "Data2Vec Audio", "model_id": "facebook/data2vec-audio-base-960h", "url": "https://huggingface.co/facebook/data2vec-audio-base-960h", "priority": 2, "notes": "self-distillation speech model"},
+
+    {"category": "multimodal", "family": "CLIP", "model_id": "openai/clip-vit-base-patch32", "url": "https://huggingface.co/openai/clip-vit-base-patch32", "priority": 1, "notes": "vision-text dual encoder"},
+    {"category": "multimodal", "family": "SigLIP", "model_id": "google/siglip-base-patch16-224", "url": "https://huggingface.co/google/siglip-base-patch16-224", "priority": 1, "notes": "sigmoid contrastive image-text model"},
+    {"category": "multimodal", "family": "AltCLIP", "model_id": "BAAI/AltCLIP", "url": "https://huggingface.co/BAAI/AltCLIP", "priority": 2, "notes": "multilingual CLIP-like model"},
+    {"category": "multimodal", "family": "ViLT", "model_id": "dandelin/vilt-b32-mlm", "url": "https://huggingface.co/dandelin/vilt-b32-mlm", "priority": 1, "notes": "single-stream vision-language transformer"},
+    {"category": "multimodal", "family": "BridgeTower", "model_id": "BridgeTower/bridgetower-base", "url": "https://huggingface.co/BridgeTower/bridgetower-base", "priority": 2, "notes": "cross-modal bridge architecture"},
+    {"category": "multimodal", "family": "BLIP", "model_id": "Salesforce/blip-image-captioning-base", "url": "https://huggingface.co/Salesforce/blip-image-captioning-base", "priority": 2, "notes": "vision-language captioning model"}
+  ],
+  "extension": [
+    {"category": "decoder_lm", "family": "Llama 3", "model_id": "meta-llama/Meta-Llama-3-8B", "url": "https://huggingface.co/meta-llama/Meta-Llama-3-8B", "priority": 3, "notes": "large modern decoder with grouped-query attention"},
+    {"category": "decoder_lm", "family": "Mistral", "model_id": "mistralai/Mistral-7B-v0.1", "url": "https://huggingface.co/mistralai/Mistral-7B-v0.1", "priority": 3, "notes": "modern decoder with GQA"},
+    {"category": "decoder_lm", "family": "Qwen 2.5", "model_id": "Qwen/Qwen2.5-7B", "url": "https://huggingface.co/Qwen/Qwen2.5-7B", "priority": 3, "notes": "modern open decoder"},
+    {"category": "decoder_lm", "family": "Gemma 2", "model_id": "google/gemma-2-9b", "url": "https://huggingface.co/google/gemma-2-9b", "priority": 3, "notes": "modern decoder with distinct attention internals"},
+    {"category": "multimodal", "family": "Qwen2-VL", "model_id": "Qwen/Qwen2-VL-2B-Instruct", "url": "https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct", "priority": 3, "notes": "vision-language instruction model"},
+    {"category": "multimodal", "family": "LLaVA", "model_id": "llava-hf/llava-1.5-7b-hf", "url": "https://huggingface.co/llava-hf/llava-1.5-7b-hf", "priority": 3, "notes": "multimodal conversational model"},
+    {"category": "multimodal", "family": "LayoutLMv3", "model_id": "microsoft/layoutlmv3-base", "url": "https://huggingface.co/microsoft/layoutlmv3-base", "priority": 3, "notes": "document understanding multimodal transformer"},
+    {"category": "multimodal", "family": "TrOCR", "model_id": "microsoft/trocr-base-printed", "url": "https://huggingface.co/microsoft/trocr-base-printed", "priority": 3, "notes": "OCR vision-encoder-decoder model"}
+  ]
+}
