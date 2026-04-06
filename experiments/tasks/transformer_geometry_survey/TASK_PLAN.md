@@ -44,11 +44,22 @@ Optional extension set:
 - 8 to 12 larger or more specialized checkpoints
 - used only after the primary set is stable
 
+Targeted replication subset:
+
+- a dedicated vision-only subset aligned with the model families emphasized in
+  `Dissecting Query-Key Interaction in Vision Transformers`
+- used to compare our layerwise `W_{qk}` survey against the vision-only findings
+  in that paper
+- kept separate from the main 36-model cross-task inventory so that replication
+  and cross-task survey do not get mixed
+
 ## Deliverables
 
 ### 1. Model inventory
 - `MODEL_INVENTORY.md`
 - `model_inventory.json`
+- `QK_INTERACTION_VISION_SUBSET.md`
+- `qk_interaction_vision_inventory.json`
 
 ### 2. Analysis code
 - `analyze_qk_geometry.py`
@@ -98,6 +109,22 @@ After the pilot:
 - run the full 36-model inventory
 - inspect failures
 - add extension models only if the main inventory is stable
+
+### Parallel vision-only replication track
+In parallel with the cross-task survey, run the dedicated
+`QK interaction` vision subset. This subset is useful for two reasons:
+
+- it gives us a closer apples-to-apples comparison with the model families
+  used in the `QK interaction` paper
+- it provides code and checkpoint naming hints for common vision transformer
+  families such as ViT, DINO, DeiT, CLIP, SimMIM, and I-JEPA
+
+The dedicated files for this track are:
+
+- `QK_INTERACTION_VISION_SUBSET.md`
+- `qk_interaction_vision_inventory.json`
+- `run_qk_interaction_vision_subset.sh`
+- `run_qk_interaction_vision_cached_only.sh`
 
 ## Design Choices
 
@@ -151,6 +178,22 @@ These statistics can be used to propose more evidence-based:
 - save outputs after every model
 - keep a failure log so long runs are resumable
 - prefer primary/base-size checkpoints before larger ones
+- reuse cache aggressively because remote access to Hugging Face may be
+  intermittent
+
+## Code Hints from Existing Open Repos
+
+For the `QK interaction`-style vision subset, the most useful implementation
+lesson is that many model families can be loaded with plain Hugging Face APIs
+ using exact checkpoint ids. In particular:
+
+- ViT, DeiT, DINO, and many CLIP variants use straightforward
+  `AutoConfig.from_pretrained(...)` and `AutoModel.from_pretrained(...)` style
+  loading
+- I-JEPA now has direct Transformers support
+- SimMIM is better treated as a special-case/manual-checkpoint family, because
+  its official checkpoints are distributed through the official Microsoft repo
+  rather than a single stable Hugging Face family we can rely on
 
 ## Immediate Next Step
 Run the pilot subset first and inspect:

@@ -99,3 +99,51 @@ Run these first:
 - `openai/whisper-small`
 - `openai/clip-vit-base-patch32`
 - `dandelin/vilt-b32-mlm`
+
+## QK Interaction Vision Subset
+
+This is a dedicated vision-only subset aligned with the model families shown in
+`Dissecting Query-Key Interaction in Vision Transformers`. It is not meant to
+replace the cross-task survey; it is meant to give us a cleaner paper-to-paper
+comparison point.
+
+### Direct Hugging Face checkpoints
+
+| Model | Family | Weight page |
+|---|---|---|
+| `google/vit-base-patch16-224` | ViT | [link](https://huggingface.co/google/vit-base-patch16-224) |
+| `google/vit-base-patch32-384` | ViT | [link](https://huggingface.co/google/vit-base-patch32-384) |
+| `google/vit-large-patch16-224` | ViT | [link](https://huggingface.co/google/vit-large-patch16-224) |
+| `google/vit-large-patch32-384` | ViT | [link](https://huggingface.co/google/vit-large-patch32-384) |
+| `google/vit-huge-patch14-224-in21k` | ViT-21k | [link](https://huggingface.co/google/vit-huge-patch14-224-in21k) |
+| `facebook/dino-vits16` | DINO | [link](https://huggingface.co/facebook/dino-vits16) |
+| `facebook/dino-vitb16` | DINO | [link](https://huggingface.co/facebook/dino-vitb16) |
+| `openai/clip-vit-base-patch16` | CLIP | [link](https://huggingface.co/openai/clip-vit-base-patch16) |
+| `openai/clip-vit-base-patch32` | CLIP | [link](https://huggingface.co/openai/clip-vit-base-patch32) |
+| `openai/clip-vit-large-patch14` | CLIP | [link](https://huggingface.co/openai/clip-vit-large-patch14) |
+| `facebook/deit-tiny-distilled-patch16-224` | DeiT-distilled | [link](https://huggingface.co/facebook/deit-tiny-distilled-patch16-224) |
+| `facebook/deit-small-distilled-patch16-224` | DeiT-distilled | [link](https://huggingface.co/facebook/deit-small-distilled-patch16-224) |
+| `facebook/deit-base-distilled-patch16-224` | DeiT-distilled | [link](https://huggingface.co/facebook/deit-base-distilled-patch16-224) |
+| `facebook/ijepa_vith14_1k` | I-JEPA | [link](https://huggingface.co/facebook/ijepa_vith14_1k) |
+
+### Special-case checkpoints
+
+These belong in the same conceptual subset, but we should treat them as
+special-case/manual families rather than generic Hugging Face ids.
+
+| Model label | Family | Source |
+|---|---|---|
+| `SimMIM-vit-b16-pretrain` | SimMIM | [Microsoft SimMIM repo](https://github.com/microsoft/SimMIM) |
+| `SimMIM-vit-b16-finetune` | SimMIM | [Microsoft SimMIM repo](https://github.com/microsoft/SimMIM) |
+
+### Practical notes
+
+- For CLIP models, the `QK interaction` paper is conceptually about the vision
+  transformer. When we analyze CLIP through Hugging Face, we should prefer the
+  vision tower and avoid mixing it with the text tower when reporting
+  paper-aligned curves.
+- For I-JEPA, modern Transformers support exists and the Hugging Face docs are
+  a better starting point than reverse-engineering a custom checkpoint loader:
+  [I-JEPA docs](https://huggingface.co/docs/transformers/model_doc/ijepa).
+- For SimMIM, the official Microsoft repo is the more reliable source of truth
+  for checkpoints and loading conventions than an ad hoc Hub search.

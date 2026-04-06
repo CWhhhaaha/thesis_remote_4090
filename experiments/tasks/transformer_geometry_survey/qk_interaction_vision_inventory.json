@@ -1,0 +1,134 @@
+{
+  "primary": [
+    {
+      "category": "vision_qk_interaction",
+      "family": "ViT",
+      "model_id": "google/vit-base-patch16-224",
+      "url": "https://huggingface.co/google/vit-base-patch16-224",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "ViT",
+      "model_id": "google/vit-base-patch32-384",
+      "url": "https://huggingface.co/google/vit-base-patch32-384",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "ViT",
+      "model_id": "google/vit-large-patch16-224",
+      "url": "https://huggingface.co/google/vit-large-patch16-224",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "ViT",
+      "model_id": "google/vit-large-patch32-384",
+      "url": "https://huggingface.co/google/vit-large-patch32-384",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "ViT-21k",
+      "model_id": "google/vit-huge-patch14-224-in21k",
+      "url": "https://huggingface.co/google/vit-huge-patch14-224-in21k",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "DINO",
+      "model_id": "facebook/dino-vits16",
+      "url": "https://huggingface.co/facebook/dino-vits16",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "DINO",
+      "model_id": "facebook/dino-vitb16",
+      "url": "https://huggingface.co/facebook/dino-vitb16",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "CLIP",
+      "model_id": "openai/clip-vit-base-patch16",
+      "url": "https://huggingface.co/openai/clip-vit-base-patch16",
+      "priority": 2,
+      "notes": "QK interaction paper family; prefer vision tower in analysis"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "CLIP",
+      "model_id": "openai/clip-vit-base-patch32",
+      "url": "https://huggingface.co/openai/clip-vit-base-patch32",
+      "priority": 1,
+      "notes": "QK interaction paper family; prefer vision tower in analysis"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "CLIP",
+      "model_id": "openai/clip-vit-large-patch14",
+      "url": "https://huggingface.co/openai/clip-vit-large-patch14",
+      "priority": 2,
+      "notes": "QK interaction paper family; prefer vision tower in analysis"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "DeiT-distilled",
+      "model_id": "facebook/deit-tiny-distilled-patch16-224",
+      "url": "https://huggingface.co/facebook/deit-tiny-distilled-patch16-224",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "DeiT-distilled",
+      "model_id": "facebook/deit-small-distilled-patch16-224",
+      "url": "https://huggingface.co/facebook/deit-small-distilled-patch16-224",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "DeiT-distilled",
+      "model_id": "facebook/deit-base-distilled-patch16-224",
+      "url": "https://huggingface.co/facebook/deit-base-distilled-patch16-224",
+      "priority": 1,
+      "notes": "QK interaction paper family; direct HF checkpoint"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "I-JEPA",
+      "model_id": "facebook/ijepa_vith14_1k",
+      "url": "https://huggingface.co/facebook/ijepa_vith14_1k",
+      "priority": 2,
+      "notes": "QK interaction-adjacent family; direct HF checkpoint with Transformers support"
+    }
+  ],
+  "extension": [
+    {
+      "category": "vision_qk_interaction",
+      "family": "SimMIM",
+      "model_id": "SimMIM-vit-b16-pretrain",
+      "url": "https://github.com/microsoft/SimMIM",
+      "priority": 3,
+      "notes": "manual checkpoint family; use official Microsoft repo rather than generic HF loading"
+    },
+    {
+      "category": "vision_qk_interaction",
+      "family": "SimMIM",
+      "model_id": "SimMIM-vit-b16-finetune",
+      "url": "https://github.com/microsoft/SimMIM",
+      "priority": 3,
+      "notes": "manual checkpoint family; use official Microsoft repo rather than generic HF loading"
+    }
+  ]
+}
