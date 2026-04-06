@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict, List
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def parse_args() -> argparse.Namespace:
@@ -21,6 +22,12 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default="outputs/pilot_subset_figures",
         help="Directory to save the generated figures.",
+    )
+    parser.add_argument(
+        "--min-layers",
+        type=int,
+        default=2,
+        help="Skip model stacks with fewer than this many layers.",
     )
     return parser.parse_args()
 
@@ -44,7 +51,7 @@ def display_name(model_dir_name: str, stack_name: str) -> str:
     return f"{model_name} | {stack_name}"
 
 
-def collect_series(input_dir: Path, metric: str) -> List[Dict]:
+def collect_series(input_dir: Path, metric: str, min_layers: int) -> List[Dict]:
     series: List[Dict] = []
     for model_dir in sorted(p for p in input_dir.iterdir() if p.is_dir()):
         csv_path = model_dir / "layers.csv"
@@ -52,6 +59,8 @@ def collect_series(input_dir: Path, metric: str) -> List[Dict]:
             continue
         rows = load_layers_csv(csv_path)
         for stack_name, stack_rows in group_by_stack(rows).items():
+            if len(stack_rows) < min_layers:
+                continue
             xs = [int(row["layer_index"]) for row in stack_rows]
             ys = [float(row[metric]) for row in stack_rows]
             categories = {row["category"] for row in stack_rows}
@@ -67,13 +76,36 @@ def collect_series(input_dir: Path, metric: str) -> List[Dict]:
     return series
 
 
+def generate_series_colors(num_series: int):
+    if num_series <= 10:
+        cmap = plt.get_cmap("tab10")
+        return [cmap(i) for i in range(num_series)]
+    if num_series <= 20:
+        cmap = plt.get_cmap("tab20")
+        return [cmap(i) for i in range(num_series)]
+
+    # Fall back to evenly spaced samples for larger overlays.
+    cmap = plt.get_cmap("nipy_spectral")
+    positions = np.linspace(0.02, 0.98, num_series)
+    return [cmap(pos) for pos in positions]
+
+
 def plot_metric(series: List[Dict], title: str, ylabel: str, out_path: Path):
     if not series:
         raise ValueError(f"No series available for {title}")
 
     plt.figure(figsize=(12, 7))
-    for item in series:
-        plt.plot(item["x"], item["y"], marker="o", linewidth=1.8, markersize=4, label=item["label"])
+    colors = generate_series_colors(len(series))
+    for item, color in zip(series, colors):
+        plt.plot(
+            item["x"],
+            item["y"],
+            marker="o",
+            linewidth=1.8,
+            markersize=4,
+            color=color,
+            label=item["label"],
+        )
 
     plt.title(title)
     plt.xlabel("Layer Index")
@@ -98,8 +130,8 @@ def main():
         fig_dir = script_dir / fig_dir
     fig_dir.mkdir(parents=True, exist_ok=True)
 
-    asym_series = collect_series(input_dir, "asym_ratio")
-    uvcos_series = collect_series(input_dir, "uvcos")
+    asym_series = collect_series(input_dir, "asym_ratio", args.min_layers)
+    uvcos_series = collect_series(input_dir, "uvcos", args.min_layers)
 
     plot_metric(
         asym_series,

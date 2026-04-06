@@ -21,6 +21,9 @@ dist/
 # Data and outputs
 data/
 outputs/
+**/data/
+**/outputs/
+**/hf_cache/
 
 # Checkpoints and large artifacts
 *.pt
@@ -32,6 +35,8 @@ outputs/
 *.tar.gz
 *.zip
 
+# Accidental nested repo checkouts
+remote_4090/
+
 # OS
 .DS_Store
-

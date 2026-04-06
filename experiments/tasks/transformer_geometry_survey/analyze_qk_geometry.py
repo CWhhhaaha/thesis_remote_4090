@@ -61,6 +61,12 @@ def parse_args() -> argparse.Namespace:
         help="Optional maximum number of models after filtering. 0 means no limit.",
     )
     parser.add_argument(
+        "--max-priority",
+        type=int,
+        default=0,
+        help="Optional maximum inventory priority to include. 0 means no priority filter.",
+    )
+    parser.add_argument(
         "--output-dir",
         type=str,
         default="outputs/geometry_survey",
@@ -140,13 +146,21 @@ def load_inventory(path: Path, split: str) -> List[Dict]:
     return inventory[split]
 
 
-def filter_inventory(entries: List[Dict], category: str, models: Optional[List[str]], limit: int) -> List[Dict]:
+def filter_inventory(
+    entries: List[Dict],
+    category: str,
+    models: Optional[List[str]],
+    limit: int,
+    max_priority: int,
+) -> List[Dict]:
     out = entries
     if category != "all":
         out = [entry for entry in out if entry["category"] == category]
     if models:
         model_set = set(models)
         out = [entry for entry in out if entry["model_id"] in model_set]
+    if max_priority > 0:
+        out = [entry for entry in out if entry.get("priority", 999999) <= max_priority]
     if limit > 0:
         out = out[:limit]
     return out
@@ -498,7 +512,7 @@ def main():
     output_root.mkdir(parents=True, exist_ok=True)
 
     entries = load_inventory(inventory_path, args.split)
-    entries = filter_inventory(entries, args.category, args.models, args.limit)
+    entries = filter_inventory(entries, args.category, args.models, args.limit, args.max_priority)
 
     summaries: List[Dict] = []
     failures: List[Dict] = []
