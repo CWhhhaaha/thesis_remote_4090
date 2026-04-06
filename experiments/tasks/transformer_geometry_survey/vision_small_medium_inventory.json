@@ -1,0 +1,77 @@
+{
+  "primary": [
+    {
+      "category": "vision_small_medium",
+      "family": "ViT",
+      "model_id": "google/vit-base-patch16-224",
+      "url": "https://huggingface.co/google/vit-base-patch16-224",
+      "priority": 1,
+      "training_object": "supervised_classification",
+      "notes": "small/medium supervised vision baseline"
+    },
+    {
+      "category": "vision_small_medium",
+      "family": "ViT",
+      "model_id": "google/vit-base-patch32-384",
+      "url": "https://huggingface.co/google/vit-base-patch32-384",
+      "priority": 1,
+      "training_object": "supervised_classification",
+      "notes": "small/medium supervised vision baseline"
+    },
+    {
+      "category": "vision_small_medium",
+      "family": "DeiT-distilled",
+      "model_id": "facebook/deit-tiny-distilled-patch16-224",
+      "url": "https://huggingface.co/facebook/deit-tiny-distilled-patch16-224",
+      "priority": 1,
+      "training_object": "supervised_classification",
+      "notes": "small supervised distilled vision model"
+    },
+    {
+      "category": "vision_small_medium",
+      "family": "DeiT-distilled",
+      "model_id": "facebook/deit-small-distilled-patch16-224",
+      "url": "https://huggingface.co/facebook/deit-small-distilled-patch16-224",
+      "priority": 1,
+      "training_object": "supervised_classification",
+      "notes": "medium supervised distilled vision model"
+    },
+    {
+      "category": "vision_small_medium",
+      "family": "DeiT-distilled",
+      "model_id": "facebook/deit-base-distilled-patch16-224",
+      "url": "https://huggingface.co/facebook/deit-base-distilled-patch16-224",
+      "priority": 1,
+      "training_object": "supervised_classification",
+      "notes": "base supervised distilled vision model"
+    },
+    {
+      "category": "vision_small_medium",
+      "family": "DINO",
+      "model_id": "facebook/dino-vits16",
+      "url": "https://huggingface.co/facebook/dino-vits16",
+      "priority": 1,
+      "training_object": "self_supervised_representation",
+      "notes": "small self-supervised vision model"
+    },
+    {
+      "category": "vision_small_medium",
+      "family": "DINO",
+      "model_id": "facebook/dino-vitb16",
+      "url": "https://huggingface.co/facebook/dino-vitb16",
+      "priority": 1,
+      "training_object": "self_supervised_representation",
+      "notes": "base self-supervised vision model"
+    },
+    {
+      "category": "vision_small_medium",
+      "family": "DINOv2",
+      "model_id": "facebook/dinov2-base",
+      "url": "https://huggingface.co/facebook/dinov2-base",
+      "priority": 1,
+      "training_object": "self_supervised_representation",
+      "notes": "base self-supervised vision model; already cached from pilot"
+    }
+  ],
+  "extension": []
+}
