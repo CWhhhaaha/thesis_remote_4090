@@ -147,3 +147,55 @@ special-case/manual families rather than generic Hugging Face ids.
   [I-JEPA docs](https://huggingface.co/docs/transformers/model_doc/ijepa).
 - For SimMIM, the official Microsoft repo is the more reliable source of truth
   for checkpoints and loading conventions than an ad hoc Hub search.
+
+## Family-and-Scale Text Subset
+
+This subset is meant to complement the cross-task survey. The point here is not
+task coverage first; it is family and scale coverage inside text transformers.
+
+### Encoder-oriented families
+
+| Model | Family | Weight page |
+|---|---|---|
+| `google/bert_uncased_L-2_H-128_A-2` | BERT compact | [link](https://huggingface.co/google/bert_uncased_L-2_H-128_A-2) |
+| `google/bert_uncased_L-4_H-256_A-4` | BERT compact | [link](https://huggingface.co/google/bert_uncased_L-4_H-256_A-4) |
+| `google/bert_uncased_L-8_H-512_A-8` | BERT compact | [link](https://huggingface.co/google/bert_uncased_L-8_H-512_A-8) |
+| `bert-base-uncased` | BERT | [link](https://huggingface.co/bert-base-uncased) |
+| `bert-large-uncased` | BERT | [link](https://huggingface.co/bert-large-uncased) |
+| `distilbert-base-uncased` | DistilBERT | [link](https://huggingface.co/distilbert-base-uncased) |
+| `albert-base-v2` | ALBERT | [link](https://huggingface.co/albert-base-v2) |
+| `albert-xxlarge-v2` | ALBERT | [link](https://huggingface.co/albert-xxlarge-v2) |
+| `FacebookAI/roberta-base` | RoBERTa | [link](https://huggingface.co/FacebookAI/roberta-base) |
+| `FacebookAI/roberta-large` | RoBERTa | [link](https://huggingface.co/FacebookAI/roberta-large) |
+| `distilbert/distilroberta-base` | DistilRoBERTa | [link](https://huggingface.co/distilbert/distilroberta-base) |
+| `microsoft/deberta-base` | DeBERTa | [link](https://huggingface.co/microsoft/deberta-base) |
+
+### Decoder-oriented families
+
+| Model | Family | Weight page |
+|---|---|---|
+| `openai-gpt` | OpenAI-GPT | [link](https://huggingface.co/openai-gpt) |
+| `gpt2` | GPT-2 | [link](https://huggingface.co/gpt2) |
+| `gpt2-medium` | GPT-2 | [link](https://huggingface.co/gpt2-medium) |
+| `gpt2-xl` | GPT-2 | [link](https://huggingface.co/gpt2-xl) |
+| `distilbert/distilgpt2` | DistilGPT2 | [link](https://huggingface.co/distilbert/distilgpt2) |
+| `EleutherAI/gpt-neo-125m` | GPT-Neo | [link](https://huggingface.co/EleutherAI/gpt-neo-125m) |
+| `EleutherAI/gpt-neo-1.3B` | GPT-Neo | [link](https://huggingface.co/EleutherAI/gpt-neo-1.3B) |
+| `EleutherAI/gpt-neo-2.7B` | GPT-Neo | [link](https://huggingface.co/EleutherAI/gpt-neo-2.7B) |
+| `EleutherAI/gpt-j-6B` | GPT-J | [link](https://huggingface.co/EleutherAI/gpt-j-6B) |
+| `microsoft/phi-1` | Phi | [link](https://huggingface.co/microsoft/phi-1) |
+| `microsoft/phi-1_5` | Phi | [link](https://huggingface.co/microsoft/phi-1_5) |
+| `microsoft/phi-2` | Phi | [link](https://huggingface.co/microsoft/phi-2) |
+
+### Optional later additions
+
+These are interesting for scale analysis, but not ideal for the first stable
+subset because of gating, size, or architecture complexity.
+
+| Model | Family | Weight page |
+|---|---|---|
+| `meta-llama/Llama-2-7b-hf` | LLaMA 2 | [link](https://huggingface.co/meta-llama/Llama-2-7b-hf) |
+| `meta-llama/Llama-2-13b-hf` | LLaMA 2 | [link](https://huggingface.co/meta-llama/Llama-2-13b-hf) |
+| `meta-llama/Meta-Llama-3-8B` | LLaMA 3 | [link](https://huggingface.co/meta-llama/Meta-Llama-3-8B) |
+| `mistralai/Mistral-7B-v0.1` | Mistral | [link](https://huggingface.co/mistralai/Mistral-7B-v0.1) |
+| `microsoft/phi-4` | Phi | [link](https://huggingface.co/microsoft/phi-4) |

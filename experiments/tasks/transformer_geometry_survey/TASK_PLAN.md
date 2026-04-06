@@ -53,6 +53,15 @@ Targeted replication subset:
 - kept separate from the main 36-model cross-task inventory so that replication
   and cross-task survey do not get mixed
 
+Family-and-scale subset:
+
+- a dedicated text-heavy subset focused on comparing model families and scale
+- motivated by the large family/scale tables reported in the
+  `symmetry/directionality` paper
+- used to answer a different question from the cross-task survey:
+  not only `which tasks differ?`, but also `how much do family and model scale
+  matter inside text transformers?`
+
 ## Deliverables
 
 ### 1. Model inventory
@@ -126,6 +135,24 @@ The dedicated files for this track are:
 - `run_qk_interaction_vision_subset.sh`
 - `run_qk_interaction_vision_cached_only.sh`
 
+### Parallel family-and-scale text track
+In parallel with the cross-task survey and the vision-only replication subset,
+run a dedicated `family and scale` text subset.
+
+This subset is useful because it lets us separate three different explanatory
+axes:
+
+1. cross-task differences
+2. family-specific inductive biases
+3. model-scale effects within the same family
+
+The dedicated files for this track are:
+
+- `FAMILY_SCALE_TEXT_SUBSET.md`
+- `family_scale_text_inventory.json`
+- `run_family_scale_text_subset.sh`
+- `run_family_scale_text_cached_only.sh`
+
 ## Design Choices
 
 ### Layerwise object
@@ -194,6 +221,23 @@ lesson is that many model families can be loaded with plain Hugging Face APIs
 - SimMIM is better treated as a special-case/manual-checkpoint family, because
   its official checkpoints are distributed through the official Microsoft repo
   rather than a single stable Hugging Face family we can rely on
+
+For the `family and scale` text subset, the most useful implementation lesson
+from the `attention-geometry-main` repository is that many relevant families are
+already organized by notebook and checkpoint id:
+
+- BERT and its compact variants
+- ALBERT
+- RoBERTa
+- DeBERTa
+- GPT / GPT-2 / DistilGPT2
+- GPT-Neo / GPT-J
+- Phi
+- LLaMA and Mistral as optional later additions
+
+This means we can start from a conservative, directly loadable subset and only
+expand toward gated or more heterogeneous families after the analysis pipeline is
+stable.
 
 ## Immediate Next Step
 Run the pilot subset first and inspect:

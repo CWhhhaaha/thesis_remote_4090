@@ -1,0 +1,238 @@
+{
+  "primary": [
+    {
+      "category": "family_scale_text",
+      "family": "BERT-compact",
+      "model_id": "google/bert_uncased_L-2_H-128_A-2",
+      "url": "https://huggingface.co/google/bert_uncased_L-2_H-128_A-2",
+      "priority": 1,
+      "notes": "compact BERT family checkpoint; good for scale trend"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "BERT-compact",
+      "model_id": "google/bert_uncased_L-4_H-256_A-4",
+      "url": "https://huggingface.co/google/bert_uncased_L-4_H-256_A-4",
+      "priority": 1,
+      "notes": "compact BERT family checkpoint; good for scale trend"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "BERT-compact",
+      "model_id": "google/bert_uncased_L-8_H-512_A-8",
+      "url": "https://huggingface.co/google/bert_uncased_L-8_H-512_A-8",
+      "priority": 1,
+      "notes": "compact BERT family checkpoint; good for scale trend"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "BERT",
+      "model_id": "bert-base-uncased",
+      "url": "https://huggingface.co/bert-base-uncased",
+      "priority": 1,
+      "notes": "canonical BERT base"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "BERT",
+      "model_id": "bert-large-uncased",
+      "url": "https://huggingface.co/bert-large-uncased",
+      "priority": 2,
+      "notes": "canonical BERT large"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "DistilBERT",
+      "model_id": "distilbert-base-uncased",
+      "url": "https://huggingface.co/distilbert-base-uncased",
+      "priority": 1,
+      "notes": "distilled encoder baseline"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "ALBERT",
+      "model_id": "albert-base-v2",
+      "url": "https://huggingface.co/albert-base-v2",
+      "priority": 1,
+      "notes": "ALBERT base"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "ALBERT",
+      "model_id": "albert-xxlarge-v2",
+      "url": "https://huggingface.co/albert-xxlarge-v2",
+      "priority": 2,
+      "notes": "ALBERT large-scale family member"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "RoBERTa",
+      "model_id": "FacebookAI/roberta-base",
+      "url": "https://huggingface.co/FacebookAI/roberta-base",
+      "priority": 1,
+      "notes": "RoBERTa base"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "RoBERTa",
+      "model_id": "FacebookAI/roberta-large",
+      "url": "https://huggingface.co/FacebookAI/roberta-large",
+      "priority": 2,
+      "notes": "RoBERTa large"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "DistilRoBERTa",
+      "model_id": "distilbert/distilroberta-base",
+      "url": "https://huggingface.co/distilbert/distilroberta-base",
+      "priority": 1,
+      "notes": "distilled RoBERTa baseline"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "DeBERTa",
+      "model_id": "microsoft/deberta-base",
+      "url": "https://huggingface.co/microsoft/deberta-base",
+      "priority": 1,
+      "notes": "DeBERTa encoder family representative"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "OpenAI-GPT",
+      "model_id": "openai-gpt",
+      "url": "https://huggingface.co/openai-gpt",
+      "priority": 2,
+      "notes": "early decoder family baseline"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "GPT-2",
+      "model_id": "gpt2",
+      "url": "https://huggingface.co/gpt2",
+      "priority": 1,
+      "notes": "GPT-2 small"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "GPT-2",
+      "model_id": "gpt2-medium",
+      "url": "https://huggingface.co/gpt2-medium",
+      "priority": 1,
+      "notes": "GPT-2 medium"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "GPT-2",
+      "model_id": "gpt2-xl",
+      "url": "https://huggingface.co/gpt2-xl",
+      "priority": 2,
+      "notes": "GPT-2 XL"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "DistilGPT2",
+      "model_id": "distilbert/distilgpt2",
+      "url": "https://huggingface.co/distilbert/distilgpt2",
+      "priority": 1,
+      "notes": "distilled GPT-2 baseline"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "GPT-Neo",
+      "model_id": "EleutherAI/gpt-neo-125m",
+      "url": "https://huggingface.co/EleutherAI/gpt-neo-125m",
+      "priority": 1,
+      "notes": "GPT-Neo small"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "GPT-Neo",
+      "model_id": "EleutherAI/gpt-neo-1.3B",
+      "url": "https://huggingface.co/EleutherAI/gpt-neo-1.3B",
+      "priority": 1,
+      "notes": "GPT-Neo medium"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "GPT-Neo",
+      "model_id": "EleutherAI/gpt-neo-2.7B",
+      "url": "https://huggingface.co/EleutherAI/gpt-neo-2.7B",
+      "priority": 2,
+      "notes": "GPT-Neo large"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "GPT-J",
+      "model_id": "EleutherAI/gpt-j-6B",
+      "url": "https://huggingface.co/EleutherAI/gpt-j-6B",
+      "priority": 2,
+      "notes": "GPT-J family representative"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "Phi",
+      "model_id": "microsoft/phi-1",
+      "url": "https://huggingface.co/microsoft/phi-1",
+      "priority": 1,
+      "notes": "Phi-1"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "Phi",
+      "model_id": "microsoft/phi-1_5",
+      "url": "https://huggingface.co/microsoft/phi-1_5",
+      "priority": 1,
+      "notes": "Phi-1.5"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "Phi",
+      "model_id": "microsoft/phi-2",
+      "url": "https://huggingface.co/microsoft/phi-2",
+      "priority": 1,
+      "notes": "Phi-2"
+    }
+  ],
+  "extension": [
+    {
+      "category": "family_scale_text",
+      "family": "LLaMA 2",
+      "model_id": "meta-llama/Llama-2-7b-hf",
+      "url": "https://huggingface.co/meta-llama/Llama-2-7b-hf",
+      "priority": 3,
+      "notes": "gated family; later extension"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "LLaMA 2",
+      "model_id": "meta-llama/Llama-2-13b-hf",
+      "url": "https://huggingface.co/meta-llama/Llama-2-13b-hf",
+      "priority": 3,
+      "notes": "gated family; later extension"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "LLaMA 3",
+      "model_id": "meta-llama/Meta-Llama-3-8B",
+      "url": "https://huggingface.co/meta-llama/Meta-Llama-3-8B",
+      "priority": 3,
+      "notes": "gated family; later extension"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "Mistral",
+      "model_id": "mistralai/Mistral-7B-v0.1",
+      "url": "https://huggingface.co/mistralai/Mistral-7B-v0.1",
+      "priority": 3,
+      "notes": "later extension after stable baseline subset"
+    },
+    {
+      "category": "family_scale_text",
+      "family": "Phi",
+      "model_id": "microsoft/phi-4",
+      "url": "https://huggingface.co/microsoft/phi-4",
+      "priority": 3,
+      "notes": "later extension due to model complexity"
+    }
+  ]
+}
