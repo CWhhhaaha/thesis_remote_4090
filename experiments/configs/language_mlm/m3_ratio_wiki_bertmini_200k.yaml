@@ -1,0 +1,41 @@
+experiment:
+  name: wiki_bertmini_m3_ratio_200k
+  seed: 0
+  run_dir: outputs/runs/wiki_bertmini_m3_ratio_200k_seed0_cuda4090
+
+data:
+  dataset_name: wikipedia
+  dataset_config: 20220301.en
+  cache_dir: data/hf_datasets
+  tokenized_cache_dir: data/tokenized/wikipedia_bertmini_len512_paper
+  num_proc: 8
+  paper_join_characters: true
+
+model:
+  config_name: prajjwal1/bert-mini
+  tokenizer_name: google-bert/bert-base-uncased
+  max_length: 512
+
+mlm:
+  probability: 0.15
+
+train:
+  max_steps: 200000
+  per_device_train_batch_size: 32
+  gradient_accumulation_steps: 8
+  learning_rate: 5.0e-5
+  warmup_steps: 200
+  weight_decay: 0.01
+  logging_steps: 200
+  save_steps: 1000
+  save_total_limit: 1
+  dataloader_num_workers: 8
+  fp16: true
+  bf16: false
+  gradient_checkpointing: false
+  disable_tqdm: false
+
+method3:
+  regularizer_type: ratio
+  epsilon: 1.0e-12
+  lambdas: [5.0e-3, 5.0e-3, 5.0e-3, 5.0e-3]

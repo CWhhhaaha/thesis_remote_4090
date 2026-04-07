@@ -17,6 +17,8 @@ This copy is prepared for running the CIFAR-10 ViT initialization experiments on
 - `B2`: `configs/current/b2_layerwise_signedcos.yaml`
 - `MIM B0 (lite)`: `configs/current/mim_b0_lite.yaml`
 - `MIM B2 (lite)`: `configs/current/mim_b2_lite.yaml`
+- `Wiki BERT-mini B0`: `configs/language_mlm/b0_wiki_bertmini_200k.yaml`
+- `Wiki BERT-mini M3-ratio`: `configs/language_mlm/m3_ratio_wiki_bertmini_200k.yaml`
 
 Current `B2` lambda schedule:
 
@@ -52,6 +54,8 @@ bash run_b0.sh
 bash run_b2.sh
 bash run_mim_b0.sh
 bash run_mim_b2.sh
+bash run_wiki_bertmini_b0.sh
+bash run_wiki_bertmini_m3_ratio.sh
 ```
 
 Background with logs:
@@ -74,3 +78,10 @@ tail -f outputs/logs/<log_file>.log
 
 - Data, outputs, checkpoints, and archives are ignored by git.
 - This workspace is intended to be pushed to GitHub as code-only.
+- The Wikipedia BERT-mini experiments follow the symmetry/directionality paper setup:
+  - model: `prajjwal1/bert-mini`
+  - task: encoder-only masked language modeling
+  - tokenizer: `google-bert/bert-base-uncased`
+  - max sequence length: `512`
+  - optimization: `200k` steps, batch `32 x grad_accum 8`, lr `5e-5`, warmup `200`
+- The language configs intentionally do not pre-download data locally; the first run on the 4090 will fetch/tokenize Wikipedia and cache it under `data/`.
