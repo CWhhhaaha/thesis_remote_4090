@@ -1,0 +1,32 @@
+{
+  "primary": [
+    {
+      "category": "seq2seq_small_medium",
+      "family": "T5",
+      "model_id": "t5-base",
+      "url": "https://huggingface.co/t5-base",
+      "priority": 1,
+      "training_object": "seq2seq_text_to_text",
+      "notes": "canonical encoder-decoder text-to-text baseline"
+    },
+    {
+      "category": "seq2seq_small_medium",
+      "family": "FLAN-T5",
+      "model_id": "google/flan-t5-base",
+      "url": "https://huggingface.co/google/flan-t5-base",
+      "priority": 1,
+      "training_object": "seq2seq_instruction_tuned",
+      "notes": "instruction-tuned T5 family member"
+    },
+    {
+      "category": "seq2seq_small_medium",
+      "family": "BART",
+      "model_id": "facebook/bart-base",
+      "url": "https://huggingface.co/facebook/bart-base",
+      "priority": 1,
+      "training_object": "seq2seq_denoising",
+      "notes": "encoder-decoder denoising baseline"
+    }
+  ],
+  "extension": []
+}
