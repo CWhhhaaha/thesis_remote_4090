@@ -4,8 +4,8 @@ experiment:
   run_dir: outputs/runs/wiki_bertmini_m3_ratio_200k_seed0_cuda4090
 
 data:
-  dataset_name: wikipedia
-  dataset_config: 20220301.en
+  dataset_name: wikimedia/wikipedia
+  dataset_config: 20231101.en
   cache_dir: data/hf_datasets
   tokenized_cache_dir: data/tokenized/wikipedia_bertmini_len512_paper
   num_proc: 8
