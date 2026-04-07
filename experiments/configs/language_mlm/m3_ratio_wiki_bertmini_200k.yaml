@@ -12,8 +12,8 @@ data:
   paper_join_characters: true
 
 model:
-  config_name: prajjwal1/bert-mini
-  tokenizer_name: google-bert/bert-base-uncased
+  config_name: data/model_assets/prajjwal1__bert-mini
+  tokenizer_name: data/model_assets/google-bert__bert-base-uncased
   max_length: 512
 
 mlm:
