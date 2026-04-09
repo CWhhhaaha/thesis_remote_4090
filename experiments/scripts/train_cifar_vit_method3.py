@@ -27,13 +27,13 @@ EXPERIMENTS_ROOT = Path(__file__).resolve().parents[1]
 if str(EXPERIMENTS_ROOT) not in sys.path:
     sys.path.insert(0, str(EXPERIMENTS_ROOT))
 
-from src.data import build_cifar10_loaders
+from src.data import build_classification_loaders
 from src.init_schemes import apply_layerwise_structural_prior, collect_layerwise_attention_metrics
 from src.method3 import describe_lambda_schedule, structural_asymmetry_regularization
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Train CIFAR-10 ViT experiments with structure-aware loss regularization.")
+    parser = argparse.ArgumentParser(description="Train vision classification experiments with structure-aware loss regularization.")
     parser.add_argument("--config", type=str, required=True)
     return parser.parse_args()
 
@@ -146,11 +146,13 @@ def main():
     use_channels_last = bool(cfg["train"].get("channels_last", True)) and device.type in {"cuda", "mps"}
     non_blocking = device.type == "cuda"
 
-    train_loader, val_loader = build_cifar10_loaders(
+    train_loader, val_loader = build_classification_loaders(
+        dataset_name=str(cfg["data"].get("dataset", "cifar10")),
         data_dir=str(resolve_path(cfg["data"]["root"])),
         batch_size=cfg["train"]["batch_size"],
         num_workers=cfg["data"]["num_workers"],
         pin_memory=device.type == "cuda",
+        image_size=int(cfg["model"]["img_size"]),
     )
 
     model = create_model(cfg).to(device)
