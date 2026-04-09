@@ -1,0 +1,45 @@
+experiment:
+  name: M3_B0_upper_bound_ratio_regularization_500ep_bs128
+  init: standard
+  seed: 43
+  run_dir: outputs/runs/M3_B0_upper_bound_ratio_regularization_500ep_bs128_seed43_cuda4090
+
+data:
+  root: data/cifar10
+  num_workers: 8
+
+model:
+  img_size: 32
+  patch_size: 4
+  num_classes: 10
+  embed_dim: 512
+  depth: 6
+  num_heads: 8
+  mlp_ratio: 4.0
+  qkv_bias: true
+  drop_rate: 0.0
+  attn_drop_rate: 0.0
+
+train:
+  epochs: 500
+  batch_size: 128
+  lr: 0.003
+  beta1: 0.9
+  beta2: 0.999
+  weight_decay: 0.05
+  warmup_epochs: 30
+  warmup_start_factor: 0.033
+  mixup_alpha: 0.2
+  cutmix_alpha: 1.0
+  label_smoothing: 0.01
+  ema_decay: 0.99998
+  use_ema: true
+  eval_every: 1
+  amp: true
+  channels_last: true
+
+method3:
+  regularizer_type: upper_bound_ratio
+  epsilon: 1.0e-12
+  rho_max: [0.4, 0.4, 0.4, 0.4, 1.0, 1.0]
+  lambdas: [1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 0.0, 0.0]

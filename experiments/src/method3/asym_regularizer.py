@@ -31,6 +31,7 @@ def describe_lambda_schedule(model: nn.Module, cfg: Dict) -> List[Dict[str, floa
     regularizer_type = str(cfg.get("regularizer_type", "absolute"))
     epsilon = float(cfg.get("epsilon", 1e-12))
     rho_targets = build_rho_targets(depth, cfg) if regularizer_type == "target_ratio" else None
+    rho_max = build_rho_max(depth, cfg) if regularizer_type == "upper_bound_ratio" else None
     stats: List[Dict[str, float]] = []
     for layer_idx, lambda_l in enumerate(lambdas, start=1):
         item = {
@@ -41,6 +42,8 @@ def describe_lambda_schedule(model: nn.Module, cfg: Dict) -> List[Dict[str, floa
         }
         if rho_targets is not None:
             item["rho_target"] = float(rho_targets[layer_idx - 1])
+        if rho_max is not None:
+            item["rho_max"] = float(rho_max[layer_idx - 1])
         stats.append(item)
     return stats
 
@@ -53,6 +56,16 @@ def build_rho_targets(depth: int, cfg: Dict) -> List[float]:
     if len(rho_targets) != depth:
         raise ValueError(f"Expected {depth} rho targets, got {len(rho_targets)}")
     return rho_targets
+
+
+def build_rho_max(depth: int, cfg: Dict) -> List[float]:
+    bounds = cfg.get("rho_max")
+    if bounds is None:
+        raise ValueError("Method3 upper_bound_ratio config must provide `rho_max`.")
+    rho_max = [float(value) for value in bounds]
+    if len(rho_max) != depth:
+        raise ValueError(f"Expected {depth} rho max values, got {len(rho_max)}")
+    return rho_max
 
 
 def _layer_total_qk_matrix(q_weight: torch.Tensor, k_weight: torch.Tensor) -> torch.Tensor:
@@ -88,6 +101,8 @@ def _layer_regularizer_value(q_weight: torch.Tensor, k_weight: torch.Tensor, cfg
         return asym_energy / total_energy
     if regularizer_type == "target_ratio":
         raise RuntimeError("target_ratio requires the layer-specific rho target and should be handled by the caller.")
+    if regularizer_type == "upper_bound_ratio":
+        raise RuntimeError("upper_bound_ratio requires the layer-specific rho max and should be handled by the caller.")
 
     raise ValueError(f"Unknown Method3 regularizer_type: {regularizer_type}")
 
@@ -118,6 +133,7 @@ def structural_asymmetry_regularization(
     lambdas = build_lambda_schedule(depth, cfg)
     regularizer_type = str(cfg.get("regularizer_type", "absolute"))
     rho_targets = build_rho_targets(depth, cfg) if regularizer_type == "target_ratio" else None
+    rho_max = build_rho_max(depth, cfg) if regularizer_type == "upper_bound_ratio" else None
     first_param = next(model.parameters())
     total_reg = torch.zeros((), device=first_param.device, dtype=first_param.dtype)
     details: Dict[str, float] = {}
@@ -138,6 +154,12 @@ def structural_asymmetry_regularization(
             diagnostics = _layer_diagnostics(q_weight, k_weight, cfg)
             rho_target = float(rho_targets[layer_idx - 1])
             layer_reg = (ratio - rho_target) ** 2
+        elif regularizer_type == "upper_bound_ratio":
+            epsilon = float(cfg.get("epsilon", 1e-12))
+            ratio = _layer_total_ratio(q_weight, k_weight, epsilon)
+            diagnostics = _layer_diagnostics(q_weight, k_weight, cfg)
+            rho_cap = float(rho_max[layer_idx - 1])
+            layer_reg = torch.clamp(ratio - rho_cap, min=0.0) ** 2
         else:
             layer_reg = _layer_regularizer_value(q_weight, k_weight, cfg)
             diagnostics = _layer_diagnostics(q_weight, k_weight, cfg) if return_details else None
@@ -150,6 +172,8 @@ def structural_asymmetry_regularization(
             details[f"ratio_l{layer_idx}"] = diagnostics["ratio"]
             if rho_targets is not None:
                 details[f"rho_target_l{layer_idx}"] = float(rho_targets[layer_idx - 1])
+            if rho_max is not None:
+                details[f"rho_max_l{layer_idx}"] = float(rho_max[layer_idx - 1])
 
     if return_details:
         return total_reg, details
