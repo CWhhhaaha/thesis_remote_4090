@@ -31,7 +31,10 @@ def describe_lambda_schedule(model: nn.Module, cfg: Dict) -> List[Dict[str, floa
     regularizer_type = str(cfg.get("regularizer_type", "absolute"))
     epsilon = float(cfg.get("epsilon", 1e-12))
     rho_targets = build_rho_targets(depth, cfg) if regularizer_type == "target_ratio" else None
+    rho_min = build_rho_min(depth, cfg) if regularizer_type == "band_ratio" else None
     rho_max = build_rho_max(depth, cfg) if regularizer_type == "upper_bound_ratio" else None
+    if regularizer_type == "band_ratio":
+        rho_max = build_rho_max(depth, cfg)
     stats: List[Dict[str, float]] = []
     for layer_idx, lambda_l in enumerate(lambdas, start=1):
         item = {
@@ -42,6 +45,8 @@ def describe_lambda_schedule(model: nn.Module, cfg: Dict) -> List[Dict[str, floa
         }
         if rho_targets is not None:
             item["rho_target"] = float(rho_targets[layer_idx - 1])
+        if rho_min is not None:
+            item["rho_min"] = float(rho_min[layer_idx - 1])
         if rho_max is not None:
             item["rho_max"] = float(rho_max[layer_idx - 1])
         stats.append(item)
@@ -56,6 +61,16 @@ def build_rho_targets(depth: int, cfg: Dict) -> List[float]:
     if len(rho_targets) != depth:
         raise ValueError(f"Expected {depth} rho targets, got {len(rho_targets)}")
     return rho_targets
+
+
+def build_rho_min(depth: int, cfg: Dict) -> List[float]:
+    bounds = cfg.get("rho_min")
+    if bounds is None:
+        raise ValueError("Method3 band_ratio config must provide `rho_min`.")
+    rho_min = [float(value) for value in bounds]
+    if len(rho_min) != depth:
+        raise ValueError(f"Expected {depth} rho min values, got {len(rho_min)}")
+    return rho_min
 
 
 def build_rho_max(depth: int, cfg: Dict) -> List[float]:
@@ -101,6 +116,8 @@ def _layer_regularizer_value(q_weight: torch.Tensor, k_weight: torch.Tensor, cfg
         return asym_energy / total_energy
     if regularizer_type == "target_ratio":
         raise RuntimeError("target_ratio requires the layer-specific rho target and should be handled by the caller.")
+    if regularizer_type == "band_ratio":
+        raise RuntimeError("band_ratio requires layer-specific rho min/max and should be handled by the caller.")
     if regularizer_type == "upper_bound_ratio":
         raise RuntimeError("upper_bound_ratio requires the layer-specific rho max and should be handled by the caller.")
 
@@ -133,7 +150,10 @@ def structural_asymmetry_regularization(
     lambdas = build_lambda_schedule(depth, cfg)
     regularizer_type = str(cfg.get("regularizer_type", "absolute"))
     rho_targets = build_rho_targets(depth, cfg) if regularizer_type == "target_ratio" else None
+    rho_min = build_rho_min(depth, cfg) if regularizer_type == "band_ratio" else None
     rho_max = build_rho_max(depth, cfg) if regularizer_type == "upper_bound_ratio" else None
+    if regularizer_type == "band_ratio":
+        rho_max = build_rho_max(depth, cfg)
     first_param = next(model.parameters())
     total_reg = torch.zeros((), device=first_param.device, dtype=first_param.dtype)
     details: Dict[str, float] = {}
@@ -154,6 +174,15 @@ def structural_asymmetry_regularization(
             diagnostics = _layer_diagnostics(q_weight, k_weight, cfg)
             rho_target = float(rho_targets[layer_idx - 1])
             layer_reg = (ratio - rho_target) ** 2
+        elif regularizer_type == "band_ratio":
+            epsilon = float(cfg.get("epsilon", 1e-12))
+            ratio = _layer_total_ratio(q_weight, k_weight, epsilon)
+            diagnostics = _layer_diagnostics(q_weight, k_weight, cfg)
+            rho_lo = float(rho_min[layer_idx - 1])
+            rho_hi = float(rho_max[layer_idx - 1])
+            upper = torch.clamp(ratio - rho_hi, min=0.0)
+            lower = torch.clamp(rho_lo - ratio, min=0.0)
+            layer_reg = upper.pow(2) + lower.pow(2)
         elif regularizer_type == "upper_bound_ratio":
             epsilon = float(cfg.get("epsilon", 1e-12))
             ratio = _layer_total_ratio(q_weight, k_weight, epsilon)
@@ -172,6 +201,8 @@ def structural_asymmetry_regularization(
             details[f"ratio_l{layer_idx}"] = diagnostics["ratio"]
             if rho_targets is not None:
                 details[f"rho_target_l{layer_idx}"] = float(rho_targets[layer_idx - 1])
+            if rho_min is not None:
+                details[f"rho_min_l{layer_idx}"] = float(rho_min[layer_idx - 1])
             if rho_max is not None:
                 details[f"rho_max_l{layer_idx}"] = float(rho_max[layer_idx - 1])
 
