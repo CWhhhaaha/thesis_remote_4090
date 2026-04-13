@@ -14,7 +14,6 @@ os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 import numpy as np
 import torch
 import torch.nn as nn
-import yaml
 from timm.data import Mixup
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.models.vision_transformer import VisionTransformer
@@ -28,6 +27,7 @@ if str(EXPERIMENTS_ROOT) not in sys.path:
     sys.path.insert(0, str(EXPERIMENTS_ROOT))
 
 from src.data import build_classification_loaders
+from src.config_utils import load_yaml_config
 from src.init_schemes import apply_layerwise_structural_prior, collect_layerwise_attention_metrics
 
 
@@ -35,11 +35,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Train vision classification experiments with timm ViT models.")
     parser.add_argument("--config", type=str, required=True)
     return parser.parse_args()
-
-
-def load_config(path: str) -> Dict:
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
 
 
 def resolve_path(path_str: str) -> Path:
@@ -130,7 +125,7 @@ def save_json(path: Path, data: Dict):
 
 def main():
     args = parse_args()
-    cfg = load_config(args.config)
+    cfg = load_yaml_config(args.config)
     run_dir = resolve_path(cfg["experiment"]["run_dir"])
     run_dir.mkdir(parents=True, exist_ok=True)
     save_json(run_dir / "config.json", cfg)
